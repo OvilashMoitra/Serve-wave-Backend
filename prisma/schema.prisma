@@ -1,0 +1,212 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  name      AppRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  auth      Auth[]
+}
+
+model Auth {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  role      String    @default("5e002e42-37c9-4a96-8f35-275b21cfb255")
+  Role      Role      @relation(fields: [role], references: [id])
+  blog      Blog[]
+  cart      Cart[]
+  faq       FAQ[]
+  jobLising Job[]
+  order     Order[]
+  service   Service[]
+  user      User[]
+  isBanned  Boolean   @default(false)
+}
+
+model User {
+  id          String    @id @default(uuid())
+  phoneNumber String?   @unique
+  userName    String?
+  authId      String
+  linkedIn    String?
+  dateOfBirth DateTime?
+  isRemoved   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  auth        Auth      @relation(fields: [authId], references: [id])
+}
+
+model BlogTag {
+  id        String          @id @default(uuid())
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  tagName   String
+  blogs     BlogTagToBlog[]
+}
+
+model BlogTagToBlog {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  blogId    String
+  tagId     String
+  blog      Blog     @relation(fields: [blogId], references: [id])
+  tag       BlogTag  @relation(fields: [tagId], references: [id])
+}
+
+model Blog {
+  id          String          @id @default(uuid())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  blogImage   String
+  blogContent String
+  addedBy     String
+  blogTitle   String
+  blogAuthor  Auth            @relation(fields: [addedBy], references: [id])
+  tags        BlogTagToBlog[]
+}
+
+model Service {
+  id          String          @id @default(uuid())
+  addedBy     String
+  serviceName String
+  description String
+  features    String[]
+  idealFor    String
+  price       String
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  category    ServiceCatefory
+  cart        Cart[]
+  order       Order[]
+  review      Review[]
+  auth        Auth            @relation(fields: [addedBy], references: [id])
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  serviceId   String
+  status      OrderStatus @default(PENDING)
+  customerId  String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  phoneNumber String
+  customer    Auth        @relation(fields: [customerId], references: [id])
+  service     Service     @relation(fields: [serviceId], references: [id])
+  review      Review[]
+}
+
+model FAQ {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  addedBy   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  auth      Auth     @relation(fields: [addedBy], references: [id])
+}
+
+model WebsiteStats {
+  id            String   @id @default(uuid())
+  users         Int      @default(0)
+  blogs         Int      @default(0)
+  orders        Int      @default(0)
+  websiteVisits Int      @default(0)
+  updatedAt     DateTime @updatedAt
+}
+
+model Job {
+  id                      String   @id @default(uuid())
+  jobTitle                String
+  jobDescription          String
+  jobLocation             String
+  jobRole                 JobRole
+  responsibilities        String[]
+  requirements            String[]
+  preferredQualifications String[]
+  applicationInstructions String
+  applicationDeadline     DateTime
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  addedBy                 String
+  author                  Auth     @relation(fields: [addedBy], references: [id])
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  serviceId String
+  product   Service  @relation(fields: [serviceId], references: [id])
+  auth      Auth     @relation(fields: [userId], references: [id])
+}
+
+model Contact {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   
+  message     String
+  phoneNumber String
+  contactStatus ContactStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  orderId   String
+  rating    Int
+  comments  String
+  createdAt DateTime @default(now())
+  lastUpdateTime DateTime 
+  updatedAt DateTime @updatedAt
+  serviceId String
+  order     Order    @relation(fields: [orderId], references: [id])
+  service   Service  @relation(fields: [serviceId], references: [id])
+}
+
+enum AppRole {
+  SUPER_ADMIN
+  HR
+  USER
+  CONTENT_MANAGER
+  PRODUCT_MANAGER
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELED
+}
+
+enum ServiceCatefory {
+  INTRO
+  BASE
+  POPULAR
+  ENTERPRISE
+}
+
+enum ContactStatus {
+  PENDING
+  COMPLETED
+}
+
+enum JobRole {
+  HR
+  CONTENT_MANAGER
+  PRODUCT_MANAGER
+}
