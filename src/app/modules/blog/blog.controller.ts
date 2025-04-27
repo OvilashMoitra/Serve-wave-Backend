@@ -8,7 +8,6 @@ import { BlogService } from './blog.service';
 const createBlog = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const blogInfo = req.body;
-        console.log({blogInfo})
         const blog = await BlogService.createBlog(blogInfo);
         if (!blog) {
             throw new ApiError(StatusCodes.NOT_FOUND, 'Error creating blog');
@@ -17,11 +16,7 @@ const createBlog = async (req: Request, res: Response, next: NextFunction) => {
     } catch (error) {
         next(error);
     }
-
-    
 };
-
-
 const deleteBlog = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const blogId = req.params.id;
@@ -48,10 +43,38 @@ const updateBlog = async (req: Request, res: Response, next: NextFunction) => {
         next(error);
     }
 };
+const getBlog = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const blogId = req.params.id;
+        const blog = await BlogService.getBlog(blogId);
+        if (!blog) {
+            throw new ApiError(StatusCodes.NOT_FOUND, 'Error fetching blog');
+        }
+        sendResponse(res, 'blog fetched successfully ', blog);
+    } catch (error) {
+        next(error);
+    }
+};
+const getAllBlog = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const query = req.query?.tagName
+        const blogs = await BlogService.getAllBlog(query as string);
+
+        if (!blogs) {
+            throw new ApiError(StatusCodes.NOT_FOUND, 'Error fetching blogs');
+        }
+        sendResponse(res, 'blog fetched successfully ', blogs);
+    } catch (error) {
+        next(error);
+    }
+};
 
 
 export const BlogController = {
     createBlog,
     deleteBlog,
     updateBlog,
+    getBlog,
+    getAllBlog,
 };

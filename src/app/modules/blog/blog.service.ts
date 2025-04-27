@@ -41,7 +41,7 @@ const createBlog = async (payload: ICreateBlog) => {
             }
         },
         )
-
+        console.log({ blogTag });
 
         const blogTagToBlog: {
             blogId: string;
@@ -110,12 +110,55 @@ const updateBlog = async (
     return blogToUpdate;
 };
 
+const getBlog = async (id: string) => {
+    const blog = await prisma.blog.findUnique({
+        where: {
+            id: id
+        },
+        include: {
+            blogAuthor: true,
+            tags: {
+                include: {
+                    tag: true
+                }
+            }
+        }
+    })
+    return blog;
+}
+const getAllBlog = async (tagName: string) => {
 
-
-
+    // const blogs = await prisma.blogTagToBlog.findMany({
+    //     include: {
+    //         blog: true,
+    //         tag: true
+    //     }
+    // })
+    const blogs = await prisma.blog.findMany({
+        where: {
+            tags: {
+                some: {
+                    tag: {
+                        tagName: tagName,  // Filter by tagName
+                    },
+                },
+            },
+        },
+        include: {
+            tags: {
+                include: {
+                    tag: true,  // Include the related tag (BlogTag)
+                },
+            },
+        },
+    })
+    return blogs;
+}
 
 export const BlogService = {
     createBlog,
     deleteBlog,
     updateBlog,
+    getBlog,
+    getAllBlog,
 };
