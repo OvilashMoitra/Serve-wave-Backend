@@ -7,6 +7,7 @@ OrderRouter.post('/create-order', OrderController.createOrder);
 
 OrderRouter.get('/', OrderController.getAllOrders);
 
+OrderRouter.get('/verify-payment', OrderController.varifyPayment)
 
 
 OrderRouter.get('/:id', OrderController.getUserOrders);
