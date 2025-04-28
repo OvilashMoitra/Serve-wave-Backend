@@ -12,6 +12,20 @@ const createService = async (payload: Service) => {
     },
     )
 
+    const users = await prisma.auth.findMany({})
+    // Prepare notification data for each user
+    const notificationPayload = users.map(user => ({
+        userId: user.id,
+        message: `${payload.serviceName} is created`,
+        read: false, // Assuming you want to mark it as unread initially
+    }));
+
+
+    const notifications = await prisma.notification.createMany({
+        data: notificationPayload,
+    });
+
+
     return service;
 };
 
