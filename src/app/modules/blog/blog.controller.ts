@@ -58,7 +58,8 @@ const getBlog = async (req: Request, res: Response, next: NextFunction) => {
 const getAllBlog = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        const query = req.query?.tagName
+        const query = req.query?.tagname
+
         const blogs = await BlogService.getAllBlog(query as string);
 
         if (!blogs) {

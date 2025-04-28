@@ -152,6 +152,7 @@ const getAllBlog = async (tagName: string) => {
             },
         },
     })
+    // console.log({ blogs })
     return blogs;
 }
 

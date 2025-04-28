@@ -9,7 +9,7 @@ import { ContactRouter } from '../modules/contact/contact.route';
 import { FAQRouter } from '../modules/faq/faq.route';
 import { JobRouter } from '../modules/job/job.route';
 
-
+import { NotificationRouter } from '../modules/notification/notification.route';
 import { OrderRouter } from '../modules/order/order.route';
 import { ReviewRouter } from '../modules/review/review.route';
 import { RoleRouter } from '../modules/role/role.route';
@@ -63,6 +63,10 @@ const moduleRoutes = [
   {
     path: "/user",
     routes: UserRouter
+  },
+  {
+    path: "/notification",
+    routes: NotificationRouter
   },
   {
     path: "/contact",
