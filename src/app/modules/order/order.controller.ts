@@ -127,7 +127,9 @@ const updateOrder = async (req: Request, res: Response, next: NextFunction) => {
 
 
 const varifyPayment = async (req: Request, res: Response, next: NextFunction) => {
-    const sessionId = req.query
+    const sessionId = req.query.sessionId
+
+    console.log(sessionId)
 
     if (!sessionId) {
         return res.status(400).json({ success: false, message: 'No session ID provided' });
@@ -135,7 +137,7 @@ const varifyPayment = async (req: Request, res: Response, next: NextFunction) =>
 
     try {
         // Retrieve the session from Stripe
-        const order = await OrderService.verifyPayment(sessionId)
+        const order = await OrderService.verifyPayment(sessionId!)
 
         if (order) {
             res.status(200).json({ success: true, message: 'Successful payment' });
@@ -146,6 +148,8 @@ const varifyPayment = async (req: Request, res: Response, next: NextFunction) =>
         res.status(500).json({ success: false, message: 'Error verifying payment' });
     }
 };
+
+
 
 
 export const OrderController = {

@@ -140,6 +140,9 @@ const updateOrder = async (payload: Pick<Order, "status">, orderId: string): Pro
 const verifyPayment = async (id: string) => {
 
     const session = await stripe.checkout.sessions.retrieve(id);
+
+    console.log({ session })
+
     if (session.payment_status === 'paid') {
         // If payment is successful, return the order details
         const order = await prisma.order.update(
@@ -148,12 +151,16 @@ const verifyPayment = async (id: string) => {
                     id: session?.metadata?.orderId
                 },
                 data: {
-                    payment: 'DONE'
+                    paymentStatus: 'DONE',
+                    status: 'COMPLETED'
                 }
             },
 
         )
-        return order;
+
+        console.log(session.payment_method_options?.card)
+
+        return { order, session };
     }
 
 };
