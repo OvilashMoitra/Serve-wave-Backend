@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../../../app';
 import config from '../../../config';
 import ApiError from '../../../errors/ApiError';
+import { stripe } from './order.controller';
 
 type OrderPayload = {
     serviceId: string;
@@ -135,10 +136,42 @@ const updateOrder = async (payload: Pick<Order, "status">, orderId: string): Pro
     }
 };
 
+
+const verifyPayment = async (id: string) => {
+
+    const session = await stripe.checkout.sessions.retrieve(id);
+
+    console.log({ session })
+
+    if (session.payment_status === 'paid') {
+        // If payment is successful, return the order details
+        const order = await prisma.order.update(
+            {
+                where: {
+                    id: session?.metadata?.orderId
+                },
+                data: {
+                    paymentStatus: 'DONE',
+                    status: 'COMPLETED'
+                }
+            },
+
+        )
+
+        console.log(session.payment_method_options?.card)
+
+        return { order, session };
+    }
+
+};
+
+
+
 export const OrderService = {
     createOrder,
     deleteOrder,
     getAllOrders,
     getUserOrders,
     updateOrder,
+    verifyPayment
 };

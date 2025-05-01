@@ -103,6 +103,7 @@ model Order {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   phoneNumber String
+  paymentStatus PaymentStatus @default(PENDING)
   customer    Auth        @relation(fields: [customerId], references: [id])
   service     Service     @relation(fields: [serviceId], references: [id])
   review      Review[]
@@ -200,6 +201,12 @@ enum OrderStatus {
   PENDING
   PROCESSING
   COMPLETED
+  CANCELED
+}
+
+enum PaymentStatus {
+  PENDING
+  DONE
   CANCELED
 }
 
